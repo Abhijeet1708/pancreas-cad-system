@@ -1,0 +1,12 @@
+nibabel
+SimpleITK
+torch
+torchvision
+nnunetv2
+monai
+pytorch-grad-cam
+scikit-learn
+matplotlib
+streamlit
+pytest
+PyYAML

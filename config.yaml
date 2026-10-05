@@ -1,0 +1,9 @@
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+
+models:
+  checkpoint_dir: "models"
+
+pipeline:
+  stages: ["preprocessing", "segmentation", "classification", "explainability"]
