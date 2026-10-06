@@ -4,9 +4,12 @@ torch
 torchvision
 nnunetv2
 monai
-pytorch-grad-cam
+grad-cam
 scikit-learn
 matplotlib
 streamlit
 pytest
 PyYAML
+huggingface_hub
+numpy
+tqdm
