@@ -1,5 +1,5 @@
 import os
-import zipfile
+import tarfile
 import shutil
 from pathlib import Path
 from huggingface_hub import hf_hub_download
@@ -9,8 +9,8 @@ def download_and_extract(repo_id: str, filename: str, extract_dir: Path):
     file_path = hf_hub_download(repo_id=repo_id, filename=filename, repo_type="dataset")
     
     print(f"Extracting {file_path} to {extract_dir}...")
-    with zipfile.ZipFile(file_path, 'r') as zip_ref:
-        zip_ref.extractall(extract_dir)
+    with tarfile.open(file_path, 'r:gz') as tar_ref:
+        tar_ref.extractall(extract_dir)
         
 def organize_data(extract_dir: Path, output_dir: Path):
     # Expected structure: extract_dir/Task07_Pancreas/imagesTr and labelsTr
@@ -51,8 +51,8 @@ def organize_data(extract_dir: Path, output_dir: Path):
     print(f"Data organized into {output_dir}")
 
 def main():
-    repo_id = "Sp-data/MSD"
-    filename = "Task07_Pancreas.zip"
+    repo_id = "qicq1c/Pubilcdataset"
+    filename = "10_Decathlon/Task07_Pancreas.tar.gz"
     
     # Determine base directory
     # Script is in src/preprocessing, so base_dir is 2 levels up
