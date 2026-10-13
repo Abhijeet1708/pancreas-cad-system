@@ -11,7 +11,7 @@
 * **Technology Stack:** Must be Python-based, relying on open-source libraries (e.g., PyTorch, MONAI, SimpleITK).
 
 ## Performance Targets
-* **Segmentation:** Dice Similarity Coefficient (DSC) > 0.6.
+* **Segmentation:** pancreas Dice > 0.6; tumor Dice reported, no hard target until a baseline exists.
 * **Classification:**
   * Area Under the ROC Curve (AUC) > 0.75
   * Accuracy (Target > 0.70)
