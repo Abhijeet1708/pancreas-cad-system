@@ -1,0 +1,140 @@
+{
+  "checkpoint_path": "/kaggle/input/datasets/abhijeetupare/seg-stage2/run/best.pt",
+  "checkpoint_iteration": 22500,
+  "split": "val",
+  "seed": 42,
+  "n_boot": 10000,
+  "args": {
+    "data_root": "/kaggle/input/datasets/abhijeetupare/msd-pancreas-processed/processed",
+    "splits": "docs/splits.json",
+    "stats": "docs/dataset_stats.csv",
+    "checkpoint": "/kaggle/input/datasets/abhijeetupare/seg-stage2/run/best.pt",
+    "out_dir": "/kaggle/working/eval_val",
+    "split": "val",
+    "final": false,
+    "patch_size": [
+      64,
+      128,
+      128
+    ],
+    "num_figure_cases": 0,
+    "bootstrap_samples": 10000,
+    "seed": 42,
+    "device": null
+  },
+  "n_requested": 42,
+  "n_evaluated": 42,
+  "n_unknown_size": 0,
+  "failed_cases": [],
+  "overall": {
+    "n": 42,
+    "pancreas_dice": {
+      "mean": 0.7900342962923224,
+      "std": 0.11321477479051466,
+      "median": 0.8140991480737234,
+      "ci_95": [
+        0.7523839453730659,
+        0.8201040782932061
+      ]
+    },
+    "tumor_dice": {
+      "mean": 0.37140807924358593,
+      "std": 0.2761283576395521,
+      "median": 0.39928789010365884,
+      "ci_95": [
+        0.28615325346526416,
+        0.4533455371239618
+      ]
+    },
+    "tumor_detected": {
+      "count": 34,
+      "rate": 0.8095238095238095,
+      "ci_95": [
+        0.6669922598996131,
+        0.9001799171835226
+      ]
+    },
+    "detected_strict": {
+      "count": 31,
+      "rate": 0.7380952380952381,
+      "ci_95": [
+        0.5893126929422804,
+        0.8469735971216702
+      ]
+    }
+  },
+  "small": {
+    "n": 16,
+    "pancreas_dice": {
+      "mean": 0.7929373000404943,
+      "std": 0.12340781100503871,
+      "median": 0.8118575047142708,
+      "ci_95": [
+        0.7253042737983197,
+        0.8377762141491332
+      ]
+    },
+    "tumor_dice": {
+      "mean": 0.371700929780594,
+      "std": 0.2804583056530807,
+      "median": 0.40250813178658196,
+      "ci_95": [
+        0.2390926317082178,
+        0.5019365847310546
+      ]
+    },
+    "tumor_detected": {
+      "count": 13,
+      "rate": 0.8125,
+      "ci_95": [
+        0.5699111903802586,
+        0.9340840092857187
+      ]
+    },
+    "detected_strict": {
+      "count": 12,
+      "rate": 0.75,
+      "ci_95": [
+        0.5050168346449122,
+        0.8981793250878696
+      ]
+    }
+  },
+  "large": {
+    "n": 26,
+    "pancreas_dice": {
+      "mean": 0.7882478324472936,
+      "std": 0.10896987850552371,
+      "median": 0.8173688697439521,
+      "ci_95": [
+        0.7414241352874928,
+        0.8238017098272963
+      ]
+    },
+    "tumor_dice": {
+      "mean": 0.37122786352850407,
+      "std": 0.2790173135023076,
+      "median": 0.39928789010365884,
+      "ci_95": [
+        0.26565347622054186,
+        0.4777754066763284
+      ]
+    },
+    "tumor_detected": {
+      "count": 21,
+      "rate": 0.8076923076923077,
+      "ci_95": [
+        0.6212374288068301,
+        0.9149293885105758
+      ]
+    },
+    "detected_strict": {
+      "count": 19,
+      "rate": 0.7307692307692307,
+      "ci_95": [
+        0.5391695962082381,
+        0.8629555167798162
+      ]
+    }
+  }
+}
