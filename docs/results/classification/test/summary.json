@@ -1,0 +1,97 @@
+{
+  "checkpoint_path": "/kaggle/working/cls_run/best.pt",
+  "split": "test",
+  "val_threshold": 0.044250715523958206,
+  "n_slices": 1398,
+  "n_cases": 42,
+  "n_pos": 400,
+  "n_neg": 998,
+  "bootstrap_samples": 1000,
+  "n_valid_boot": 1000,
+  "auc": 0.6658266533066133,
+  "metrics_at_val_threshold": {
+    "threshold": 0.044250715523958206,
+    "accuracy": 0.5643776824034334,
+    "sensitivity": 0.6825,
+    "specificity": 0.5170340681362725,
+    "precision": 0.3615894039735099,
+    "f1": 0.4727272727272728,
+    "tp": 273,
+    "fp": 482,
+    "tn": 516,
+    "fn": 127
+  },
+  "metrics_at_fixed_05_threshold": {
+    "threshold": 0.5,
+    "accuracy": 0.7088698140200286,
+    "sensitivity": 0.41,
+    "specificity": 0.8286573146292585,
+    "precision": 0.48955223880597015,
+    "f1": 0.44625850340136053,
+    "tp": 164,
+    "fp": 171,
+    "tn": 827,
+    "fn": 236
+  },
+  "ci_95": {
+    "auc": [
+      0.5974766445101334,
+      0.7315837086793758
+    ],
+    "val_threshold": {
+      "accuracy": [
+        0.5167594424099864,
+        0.6112844781580363
+      ],
+      "sensitivity": [
+        0.572118637242268,
+        0.7749335459861775
+      ],
+      "specificity": [
+        0.4439645675090822,
+        0.5890049925770302
+      ],
+      "precision": [
+        0.3061663879598662,
+        0.41959761549925484
+      ],
+      "f1": [
+        0.4066908486768368,
+        0.5302415016879151
+      ]
+    },
+    "fixed_05_threshold": {
+      "accuracy": [
+        0.6680190392608574,
+        0.7505502714343397
+      ],
+      "sensitivity": [
+        0.2968987109406869,
+        0.5191946568732441
+      ],
+      "specificity": [
+        0.7820357833655706,
+        0.8717400318979266
+      ],
+      "precision": [
+        0.40112042150701455,
+        0.5808404866567444
+      ],
+      "f1": [
+        0.346064936296671,
+        0.5373254545118273
+      ]
+    }
+  },
+  "args": {
+    "data_dir": "/tmp/cls_data",
+    "checkpoint": "/kaggle/working/cls_run/best.pt",
+    "out_dir": "/kaggle/working/cls_eval_test",
+    "split": "test",
+    "final": true,
+    "bootstrap_samples": 1000,
+    "seed": 42,
+    "batch_size": 256,
+    "device": null
+  }
+}
