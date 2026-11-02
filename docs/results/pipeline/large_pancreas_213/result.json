@@ -1,0 +1,41 @@
+{
+  "input": "/kaggle/input/datasets/abhijeetupare/msd-pancreas-processed/processed/pancreas_213.npz",
+  "seg_checkpoint": "best.pt",
+  "cls_checkpoint": "cls_best.pt",
+  "seg_iteration": 22500,
+  "classifier_threshold": 0.044250715523958206,
+  "classifier_threshold_source": "checkpoint",
+  "device": "cuda",
+  "seconds": 6.2442,
+  "image_shape": [
+    95,
+    480,
+    480
+  ],
+  "pancreas_volume_ml": 76.215,
+  "tumor_volume_ml": 21.37,
+  "segmentation_tumor_found": true,
+  "n_slices_evaluated": 33,
+  "n_slices_flagged": 23,
+  "max_slice_probability": 0.999980092048645,
+  "top_slices": [
+    {
+      "z": 36,
+      "probability": 0.999980092048645
+    },
+    {
+      "z": 37,
+      "probability": 0.999430239200592
+    },
+    {
+      "z": 38,
+      "probability": 0.9983524084091187
+    }
+  ],
+  "notes": [
+    "Research prototype - not for clinical use",
+    "The slice classifier is weak; the segmentation output is the primary finding.",
+    "Segmentation finding: Tumor detected with 8548 voxels (21.3700 mL), meeting threshold of 100 voxels.",
+    "Classifier finding: 23 of 33 evaluated slices flagged above threshold 0.0443 (maximum probability: 1.0000)."
+  ]
+}
