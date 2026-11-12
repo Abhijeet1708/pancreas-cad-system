@@ -11,7 +11,12 @@ torch = pytest.importorskip("torch")
 monai = pytest.importorskip("monai")
 
 from src.segmentation.checkpoint import load_checkpoint, save_checkpoint  # noqa: E402
-from src.segmentation.model import build_loss, build_unet, predict_volume  # noqa: E402
+from src.segmentation.model import (  # noqa: E402
+    build_loss,
+    build_unet,
+    predict_logits,
+    predict_volume,
+)
 
 
 def test_build_unet_output_shape() -> None:
@@ -106,3 +111,65 @@ def test_checkpoint_roundtrip_restores_weights_and_removes_tmp(tmp_path: Path) -
 
     for key, weight in model.state_dict().items():
         assert torch.equal(weight, loaded["model"][key])
+
+
+def test_predict_volume_bias_zero_equals_argmax_of_logits() -> None:
+    """Test predict_volume with bias 0.0 equals argmax of predict_logits."""
+    model = build_unet(channels=(4, 8, 16), strides=(2, 2), num_res_units=1)
+    input_shape = (16, 32, 32)
+    patch_size = (16, 32, 32)
+    rng = np.random.default_rng(123)
+    image = rng.uniform(0.0, 1.0, size=input_shape).astype(np.float32)
+
+    logits = predict_logits(
+        model=model,
+        image=image,
+        patch_size=patch_size,
+        device="cpu",
+    )
+    expected = torch.argmax(logits, dim=0).to(torch.uint8).numpy()
+
+    actual = predict_volume(
+        model=model,
+        image=image,
+        patch_size=patch_size,
+        device="cpu",
+        tumor_logit_bias=0.0,
+    )
+
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_tumor_voxel_count_monotone_with_bias() -> None:
+    """Test tumor voxel count never decreases with bias and bias 1e6 labels all 2."""
+    model = build_unet(channels=(4, 8, 16), strides=(2, 2), num_res_units=1)
+    input_shape = (16, 32, 32)
+    patch_size = (16, 32, 32)
+    rng = np.random.default_rng(456)
+    image = rng.uniform(0.0, 1.0, size=input_shape).astype(np.float32)
+
+    biases = [-10.0, -2.0, 0.0, 0.5, 1.0, 2.0, 5.0, 10.0]
+    tumor_counts = []
+    for b in biases:
+        pred = predict_volume(
+            model=model,
+            image=image,
+            patch_size=patch_size,
+            device="cpu",
+            tumor_logit_bias=b,
+        )
+        count = int(np.count_nonzero(pred == 2))
+        tumor_counts.append(count)
+
+    for i in range(len(tumor_counts) - 1):
+        assert tumor_counts[i] <= tumor_counts[i + 1]
+
+    # Extreme bias 1e6 makes every voxel label 2 (tumor)
+    pred_extreme = predict_volume(
+        model=model,
+        image=image,
+        patch_size=patch_size,
+        device="cpu",
+        tumor_logit_bias=1e6,
+    )
+    assert np.all(pred_extreme == 2)

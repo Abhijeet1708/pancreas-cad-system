@@ -489,3 +489,68 @@ def test_failed_case_missing_npz_records_error_and_exits_code_1(
     assert len(summary["failed_cases"]) == 1
     assert summary["failed_cases"][0]["case_id"] == "case_missing"
     assert "NPZ file not found" in summary["failed_cases"][0]["error"]
+
+
+def test_evaluate_tumor_bias_recorded_in_summary_json(tmp_path: Path) -> None:
+    """Test --tumor-bias is recorded in summary.json and summary.md."""
+    data_dir = tmp_path / "data"
+    data_dir.mkdir()
+    out_dir = tmp_path / "eval_bias"
+
+    case_ids = ["case_001"]
+    for cid in case_ids:
+        _create_synthetic_case(data_dir / f"{cid}.npz")
+
+    splits_file = tmp_path / "splits.json"
+    splits_file.write_text(
+        json.dumps({"seed": 42, "train": [], "val": case_ids, "test": []}),
+        encoding="utf-8",
+    )
+
+    stats_file = tmp_path / "stats.csv"
+    with open(stats_file, mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["case", "pancreas_vox", "tumor_vox", "tumor_ml", "tumor_diam_mm", "bad"])
+        writer.writerow(["case_001", "1000", "200", "0.5", "15.0", "0"])
+
+    ckpt_file = tmp_path / "model.pt"
+    _create_tiny_checkpoint(ckpt_file)
+
+    argv = [
+        "--data-root",
+        str(data_dir),
+        "--splits",
+        str(splits_file),
+        "--stats",
+        str(stats_file),
+        "--checkpoint",
+        str(ckpt_file),
+        "--out-dir",
+        str(out_dir),
+        "--split",
+        "val",
+        "--patch-size",
+        "16",
+        "32",
+        "32",
+        "--num-figure-cases",
+        "0",
+        "--bootstrap-samples",
+        "100",
+        "--device",
+        "cpu",
+        "--tumor-bias",
+        "1.5",
+    ]
+
+    exit_code = main(argv)
+    assert exit_code == 0
+
+    with open(out_dir / "summary.json", mode="r", encoding="utf-8") as f:
+        summary = json.load(f)
+
+    assert summary["tumor_logit_bias"] == 1.5
+
+    md_text = (out_dir / "summary.md").read_text(encoding="utf-8")
+    assert "Tumor Logit Bias" in md_text
+    assert "1.5" in md_text

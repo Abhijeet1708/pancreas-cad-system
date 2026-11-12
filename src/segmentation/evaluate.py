@@ -426,6 +426,7 @@ def generate_markdown_summary(summary_data: Dict[str, Any]) -> str:
         f"- **Checkpoint**: `{summary_data.get('checkpoint_path', 'N/A')}`",
         f"- **Iteration**: {summary_data.get('checkpoint_iteration', 'N/A')}",
         f"- **Split**: {summary_data.get('split', 'N/A')}",
+        f"- **Tumor Logit Bias**: {summary_data.get('tumor_logit_bias', 0.0)}",
         f"- **Requested Cases**: {summary_data.get('n_requested', 0)}",
         f"- **Evaluated Cases**: {summary_data.get('n_evaluated', 0)}",
         f"- **Unknown Size Cases**: {summary_data.get('n_unknown_size', 0)}",
@@ -550,6 +551,12 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     )
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument(
+        "--tumor-bias",
+        type=float,
+        default=0.0,
+        help="Additive bias applied to tumor logit before argmax",
+    )
+    parser.add_argument(
         "--device",
         type=str,
         default=None,
@@ -612,6 +619,7 @@ def evaluate(args: argparse.Namespace) -> int:
                 image=image,
                 patch_size=patch_size,
                 device=device,
+                tumor_logit_bias=args.tumor_bias,
             )
 
             dices = region_dice(pred_label, gt_label)
@@ -707,6 +715,7 @@ def evaluate(args: argparse.Namespace) -> int:
         "checkpoint_path": str(args.checkpoint),
         "checkpoint_iteration": iteration,
         "split": args.split,
+        "tumor_logit_bias": args.tumor_bias,
         "seed": args.seed,
         "n_boot": args.bootstrap_samples,
         "args": sanitize_args(args),
@@ -740,6 +749,7 @@ def evaluate(args: argparse.Namespace) -> int:
                     image=img,
                     patch_size=patch_size,
                     device=device,
+                    tumor_logit_bias=args.tumor_bias,
                 )
                 save_overlay_figure(
                     image=img,
