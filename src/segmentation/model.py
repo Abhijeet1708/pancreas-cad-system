@@ -71,16 +71,16 @@ def build_loss() -> monai.losses.DiceCELoss:
     )
 
 
-def predict_volume(
+def predict_logits(
     model: torch.nn.Module,
     image: Union[np.ndarray, torch.Tensor],
     patch_size: Tuple[int, int, int],
     device: Union[str, torch.device],
     overlap: float = 0.5,
     sw_batch_size: int = 2,
-) -> np.ndarray:
+) -> torch.Tensor:
     """
-    Perform sliding-window inference on a 3D volume.
+    Perform sliding-window inference and return raw logits on CPU.
 
     Parameters
     ----------
@@ -99,8 +99,8 @@ def predict_volume(
 
     Returns
     -------
-    np.ndarray
-        Argmax predicted class map as a uint8 array of shape (z, y, x).
+    torch.Tensor
+        Float32 tensor of shape (3, z, y, x) on CPU containing raw sliding-window logits.
     """
     dev = torch.device(device)
     if isinstance(image, np.ndarray):
@@ -129,8 +129,56 @@ def predict_volume(
                     overlap=overlap,
                     mode="gaussian",
                 )
-            pred = torch.argmax(logits, dim=1).squeeze(0)
-            return pred.detach().cpu().to(torch.uint8).numpy()
+            return logits.squeeze(0).detach().cpu().to(torch.float32)
     finally:
         if was_training:
             model.train()
+
+
+def predict_volume(
+    model: torch.nn.Module,
+    image: Union[np.ndarray, torch.Tensor],
+    patch_size: Tuple[int, int, int],
+    device: Union[str, torch.device],
+    overlap: float = 0.5,
+    sw_batch_size: int = 2,
+    tumor_logit_bias: float = 0.0,
+) -> np.ndarray:
+    """
+    Perform sliding-window inference on a 3D volume.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        3D segmentation network.
+    image : Union[np.ndarray, torch.Tensor]
+        Input image volume of shape (z, y, x).
+    patch_size : Tuple[int, int, int]
+        Patch size for sliding window inference in (z, y, x) order.
+    device : Union[str, torch.device]
+        Target compute device.
+    overlap : float, default=0.5
+        Sliding window overlap fraction.
+    sw_batch_size : int, default=2
+        Batch size of patches during sliding-window inference.
+    tumor_logit_bias : float, default=0.0
+        Additive bias applied to tumor logit (channel 2) before argmax.
+
+    Returns
+    -------
+    np.ndarray
+        Argmax predicted class map as a uint8 array of shape (z, y, x).
+    """
+    logits = predict_logits(
+        model=model,
+        image=image,
+        patch_size=patch_size,
+        device=device,
+        overlap=overlap,
+        sw_batch_size=sw_batch_size,
+    )
+    if tumor_logit_bias != 0.0:
+        logits = logits.clone()
+        logits[2] = logits[2] + tumor_logit_bias
+    pred = torch.argmax(logits, dim=0)
+    return pred.to(torch.uint8).numpy()
